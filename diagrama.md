@@ -1,29 +1,28 @@
-```mermaid
-erDiagram
-    CLIENTE ||--o{ PEDIDO : faz
-    PEDIDO ||--o{ PIZZA : inclui
-    PIZZA ||--o{ SABOR : tem
+classDiagram
+    Cliente "1" o-- "0..*" Pedido : faz
+    Pedido "0..*" o-- "0..*" Pizza : contém
+    Pizza "0..*" o-- "0..*" Sabor : tem
 
-    CLIENTE {
-        int id
-        string nome
-        string telefone
-        text endereco
+    class Cliente {
+        +int id
+        +CharField nome
+        +CharField telefone
+        +TextField endereco
     }
 
-    SABOR {
-        int id
-        string nome
-        text descricao
+    class Pedido {
+        +int id
+        +ForeignKey cliente
+        +DateTimeField data_pedido
     }
 
-    PIZZA {
-        int id
-        char tamanho
+    class Pizza {
+        +int id
+        +CharField tamanho
     }
 
-    PEDIDO {
-        int id
-        datetime data_pedido
+    class Sabor {
+        +int id
+        +CharField nome
+        +TextField descricao
     }
-```
