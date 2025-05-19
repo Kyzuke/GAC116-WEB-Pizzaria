@@ -21,6 +21,13 @@ class Sabor(models.Model):
     class Meta:
         verbose_name_plural = "Sabores"
 
+    def delete(self, *args, **kwargs):
+        pizzas = list(self.pizza_set.all())
+        for pizza in pizzas:
+            pizza.delete()
+        super().delete(*args, **kwargs)
+
+
 class Pizza(models.Model):
     TAMANHOS = (
         ('P', 'Pequena'),
@@ -31,7 +38,13 @@ class Pizza(models.Model):
     sabores = models.ManyToManyField(Sabor)
 
     def __str__(self):
-        return f"Pizza {self.get_tamanho_display() + " de " + ', '.join([sabor.nome for sabor in self.sabores.all()])}"
+        lista = ', '.join(s.nome for s in self.sabores.all())
+        return f"Pizza {self.get_tamanho_display()} de {lista}"
+
+    def delete(self, *args, **kwargs):
+        for pedido in self.pedido_set.all():
+            pedido.delete()
+        super().delete(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "Pizzas"
