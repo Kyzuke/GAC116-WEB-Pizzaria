@@ -12,7 +12,7 @@ class Cliente(models.Model):
         verbose_name_plural = "Clientes"
 
 class Sabor(models.Model):
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=100, unique=True)
     descricao = models.TextField(blank=True)
 
     def __str__(self):
