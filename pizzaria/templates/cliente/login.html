@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Entrar – Pizzaria</title>
+</head>
+<body>
+  <h1>Login</h1>
+  <form id="login-form">
+    <label>Usuário: <input name="username" required></label><br>
+    <label>Senha:   <input name="password" type="password" required></label><br>
+    <button>Entrar</button>
+  </form>
+  <p>Não tem conta? <a href="/register/">Cadastre-se</a></p>
+
+  <script>
+    function getCookie(name) {
+      const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return v ? v.pop() : '';
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const data = {
+        username: e.target.username.value,
+        password: e.target.password.value
+      };
+      const res = await fetch('/api/auth/login/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+      });
+      if (res.ok) {
+        window.location = '/pizzas/';
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Falha no login');
+      }
+    });
+  </script>
+</body>
+</html>

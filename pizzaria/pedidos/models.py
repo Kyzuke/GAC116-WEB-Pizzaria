@@ -1,7 +1,31 @@
+from django.conf import settings
 from django.db import models
 
+class Address(models.Model):
+    user     = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    street   = models.CharField(max_length=255)
+    city     = models.CharField(max_length=100)
+    zip_code = models.CharField(max_length=20)
+
+class Order(models.Model):
+    user       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    address    = models.ForeignKey(Address, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class OrderItem(models.Model):
+    order    = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    pizza    = models.ForeignKey('pedidos.Pizza', on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(default=1)
+
 class Cliente(models.Model):
-    nome = models.CharField(max_length=100)
+    user     = models.OneToOneField(
+                 settings.AUTH_USER_MODEL,
+                 on_delete=models.CASCADE,
+                 related_name='cliente',
+                 null=True,
+                 blank=True
+               )
+    nome     = models.CharField(max_length=100)
     telefone = models.CharField(max_length=15)
     endereco = models.TextField()
 

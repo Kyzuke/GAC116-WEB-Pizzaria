@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Cardápio – Pizzaria</title>
+  <style>
+    /* Exemplo simples de estilo */
+    body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 1rem; }
+    .pizza { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; }
+    .pizza h2 { margin: 0 0 0.5rem; }
+    .pizza p { margin: 0.5rem 0; }
+    .pizza label { display: block; margin-top: 0.5rem; }
+    #ir-checkout { padding: 0.75rem 1.5rem; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Escolha sua pizza</h1>
+  <div id="lista"></div>
+  <button id="ir-checkout">Ver Carrinho</button>
+
+  <script>
+    // Carrega carrinho do localStorage (array de { pizza: id, quantity: n })
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+    // Função para renderizar o cardápio
+    async function loadPizzas() {
+      const res = await fetch('/api/pizzas/', { credentials: 'same-origin' });
+      if (!res.ok) {
+        alert('Erro ao carregar o cardápio');
+        return;
+      }
+      const pizzas = await res.json();
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+
+      pizzas.forEach(p => {
+        // Traduz o código do tamanho
+        const labelTamanho = p.tamanho === 'P' ? 'Pequena'
+                           : p.tamanho === 'M' ? 'Média'
+                           : 'Grande';
+        // Lista os nomes dos sabores
+        const listaSabores = p.sabores.map(s => s.nome).join(', ');
+
+        const div = document.createElement('div');
+        div.className = 'pizza';
+        div.innerHTML = `
+          <h2>Pizza ${labelTamanho}</h2>
+          <p><strong>Sabores:</strong> ${listaSabores}</p>
+          <label>
+            Qtd:
+            <input
+              type="number"
+              min="0"
+              value="${(cart.find(i => i.pizza === p.id) || {quantity: 0}).quantity}"
+              data-id="${p.id}"
+            >
+          </label>
+        `;
+        lista.appendChild(div);
+      });
+
+      // Adiciona listener para atualizar o carrinho ao mudar quantidade
+      lista.querySelectorAll('input[type=number]').forEach(input => {
+        input.addEventListener('change', e => {
+          const id = +e.target.dataset.id;
+          const qty = +e.target.value;
+          cart = cart.filter(item => item.pizza !== id);
+          if (qty > 0) cart.push({ pizza: id, quantity: qty });
+          localStorage.setItem('cart', JSON.stringify(cart));
+        });
+      });
+    }
+
+    // Navega para o checkout
+    document.getElementById('ir-checkout').addEventListener('click', () => {
+      window.location.href = '/checkout/';
+    });
+
+    // Inicialização
+    loadPizzas();
+  </script>
+</body>
+</html>
