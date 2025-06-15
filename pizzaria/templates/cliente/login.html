@@ -3,15 +3,18 @@
 <head>
   <meta charset="utf-8">
   <title>Entrar – Pizzaria</title>
+  <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
-  <h1>Login</h1>
-  <form id="login-form">
-    <label>Usuário: <input name="username" required></label><br>
-    <label>Senha:   <input name="password" type="password" required></label><br>
-    <button>Entrar</button>
-  </form>
-  <p>Não tem conta? <a href="/register/">Cadastre-se</a></p>
+<body class="login-page">
+  <div class="container">
+    <h1>Login</h1>
+    <form id="login-form">
+      <label>Usuário: <input name="username" required></label><br>
+      <label>Senha:   <input name="password" type="password" required></label><br>
+      <button>Entrar</button>
+    </form>
+    <p>Não tem conta? <a href="/register/">Cadastre-se</a></p>
+  </div>
 
   <script>
     function getCookie(name) {

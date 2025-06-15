@@ -3,116 +3,107 @@
 <head>
   <meta charset="utf-8">
   <title>Checkout – Pizzaria</title>
-  <style>
-    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 1rem; }
-    .hidden { display: none; }
-    form > div { margin-bottom: 1rem; }
-    label { display: block; }
-  </style>
+  <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
-  <h1>Finalizar Pedido</h1>
+<body class="checkout-page">
+  <div class="container">
+    <h1>Finalizar Pedido</h1>
 
-  <form id="checkout-form">
-    <div>
-      <label for="select-address">Endereço cadastrado:</label>
-      <select id="select-address" name="address_choice">
-        <option value="">— Carregando… —</option>
-        <option value="new">Outro endereço</option>
-      </select>
-    </div>
+    <form id="checkout-form">
+      <div>
+        <label for="select-address">Endereço cadastrado:</label>
+        <select id="select-address" name="address_choice">
+          <option value="">— Carregando… —</option>
+          <option value="new">Outro endereço</option>
+        </select>
+      </div>
 
-    <div id="new-address-fields" class="hidden">
-      <label>Rua:    <input name="street"></label>
-      <label>Cidade: <input name="city"></label>
-      <label>CEP:    <input name="zip_code"></label>
-    </div>
+      <div id="new-address-fields" class="hidden">
+        <label>Rua:    <input name="street"></label>
+        <label>Cidade: <input name="city"></label>
+        <label>CEP:    <input name="zip_code"></label>
+      </div>
 
-    <button type="submit">Enviar Pedido</button>
-  </form>
+      <button type="submit">Enviar Pedido</button>
+    </form>
+  </div>
 
   <script>
-  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  if (!cart.length) {
-    alert('Carrinho vazio');
-    window.location = '/pizzas/';
-  }
-
-  // Pega cookie CSRF
-  function getCookie(name) {
-    const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-    return match ? match.pop() : '';
-  }
-
-  // Carrega endereços existentes
-  async function loadAddresses() {
-    const res = await fetch('/api/addresses/', {
-      credentials: 'same-origin'
-    });
-    if (!res.ok) {
-      alert('Erro ao carregar endereços');
-      return;
-    }
-    const addrs = await res.json();
-    const sel = document.getElementById('select-address');
-    sel.innerHTML = '<option value="">— Selecione… —</option>';
-    addrs.forEach(a => {
-      const opt = document.createElement('option');
-      opt.value = a.id;
-      opt.text  = `${a.street}, ${a.city} – CEP ${a.zip_code}`;
-      sel.appendChild(opt);
-    });
-    sel.appendChild(new Option('Outro endereço', 'new'));
-  }
-
-  // Lógica de mostrar/ocultar campos
-  document.getElementById('select-address').addEventListener('change', e => {
-    const newFields = document.getElementById('new-address-fields');
-    if (e.target.value === 'new' || e.target.value === '') {
-      newFields.classList.remove('hidden');
-    } else {
-      newFields.classList.add('hidden');
-    }
-  });
-
-  // Envio do pedido
-  document.getElementById('checkout-form').addEventListener('submit', async e => {
-    e.preventDefault();
-    const choice = e.target.address_choice.value;
-    const payload = { items: cart };
-    if (choice && choice !== 'new') {
-      payload.address_id = +choice;
-    } else {
-      // pega valores do form
-      const fd = new FormData(e.target);
-      payload.address = {
-        street:  fd.get('street'),
-        city:    fd.get('city'),
-        zip_code:fd.get('zip_code')
-      };
-    }
-
-    const res = await fetch('/api/orders/', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken')
-      },
-      body: JSON.stringify(payload)
-    });
-    if (res.ok) {
-      localStorage.removeItem('cart');
-      alert('Pedido realizado com sucesso!');
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    if (!cart.length) {
+      alert('Carrinho vazio');
       window.location = '/pizzas/';
-    } else {
-      const err = await res.json();
-      alert('Erro: ' + JSON.stringify(err));
     }
-  });
 
-  // Inicializa
-  loadAddresses();
+    function getCookie(name) {
+      const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return match ? match.pop() : '';
+    }
+
+    async function loadAddresses() {
+      const res = await fetch('/api/addresses/', {
+        credentials: 'same-origin'
+      });
+      if (!res.ok) {
+        alert('Erro ao carregar endereços');
+        return;
+      }
+      const addrs = await res.json();
+      const sel = document.getElementById('select-address');
+      sel.innerHTML = '<option value="">— Selecione… —</option>';
+      addrs.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.text  = `${a.street}, ${a.city} – CEP ${a.zip_code}`;
+        sel.appendChild(opt);
+      });
+      sel.appendChild(new Option('Outro endereço', 'new'));
+    }
+
+    document.getElementById('select-address').addEventListener('change', e => {
+      const newFields = document.getElementById('new-address-fields');
+      if (e.target.value === 'new' || e.target.value === '') {
+        newFields.classList.remove('hidden');
+      } else {
+        newFields.classList.add('hidden');
+      }
+    });
+
+    document.getElementById('checkout-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const choice = e.target.address_choice.value;
+      const payload = { items: cart };
+      if (choice && choice !== 'new') {
+        payload.address_id = +choice;
+      } else {
+        const fd = new FormData(e.target);
+        payload.address = {
+          street:   fd.get('street'),
+          city:     fd.get('city'),
+          zip_code: fd.get('zip_code')
+        };
+      }
+
+      const res = await fetch('/api/orders/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        localStorage.removeItem('cart');
+        alert('Pedido realizado com sucesso!');
+        window.location = '/pizzas/';
+      } else {
+        const err = await res.json();
+        alert('Erro: ' + JSON.stringify(err));
+      }
+    });
+
+    loadAddresses();
   </script>
 </body>
 </html>
