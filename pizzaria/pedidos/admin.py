@@ -64,6 +64,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
+        'get_cliente', 
         'get_rua',
         'get_cidade',
         'get_cep',
@@ -83,3 +84,8 @@ class OrderAdmin(admin.ModelAdmin):
     def get_cep(self, obj):
         return obj.address.zip_code
     get_cep.short_description = 'CEP'
+    
+    def get_cliente(self, obj):
+        return obj.user.cliente.nome
+    get_cliente.short_description = 'Cliente'
+    get_cliente.admin_order_field = 'user__cliente__nome'

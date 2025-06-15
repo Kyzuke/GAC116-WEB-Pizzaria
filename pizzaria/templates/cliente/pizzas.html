@@ -2,73 +2,123 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <title>Cardápio – Pizzaria</title>
+  <title>Cardápio – Pizzaria do Tião</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="pizzas-page">
+
+  <header class="site-header">
+    <div class="logo-placeholder">
+      <img src="/static/img/logo.png" alt="Logo da Pizzaria do Tião">
+      <span class="logo-text">Pizzaria do Tião</span>
+    </div>
+    <button class="admin-button" onclick="location.href='/admin'">Admin</button>
+  </header>
+
   <div class="container">
     <h1>Escolha sua pizza</h1>
-    <div id="lista"></div>
+
+    <!-- 1) Seleção de tamanho -->
+    <div id="size-selection">
+      <p>Qual tamanho de pizza deseja escolher?</p>
+      <button class="size-btn" data-size="P">Pequena</button>
+      <button class="size-btn" data-size="M">Média</button>
+      <button class="size-btn" data-size="G">Grande</button>
+    </div>
+
+    <!-- 2) Seção de pizzas (inicialmente oculta) -->
+    <div id="pizzas-section" class="hidden">
+      <button id="back-size" class="back-btn">← Escolher outro tamanho</button>
+      <div id="lista"></div>
+    </div>
+
+    <!-- 3) Botão Ver Carrinho sempre visível -->
     <button id="ir-checkout">Ver Carrinho</button>
   </div>
 
   <script>
-    // Carrega carrinho do localStorage
+    let allPizzas = [];
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-    // Função para renderizar o cardápio
-    async function loadPizzas() {
+    // Carrega todo o catálogo de pizzas
+    async function loadAllPizzas() {
       const res = await fetch('/api/pizzas/', { credentials: 'same-origin' });
-      if (!res.ok) {
-        alert('Erro ao carregar o cardápio');
-        return;
-      }
-      const pizzas = await res.json();
-      const lista = document.getElementById('lista');
-      lista.innerHTML = '';
+      if (!res.ok) { alert('Erro ao carregar o cardápio'); return; }
+      allPizzas = await res.json();
+    }
 
-      pizzas.forEach(p => {
-        const labelTamanho = p.tamanho === 'P' ? 'Pequena'
-                           : p.tamanho === 'M' ? 'Média'
-                           : 'Grande';
-        const listaSabores = p.sabores.map(s => s.nome).join(', ');
+    // Atualiza o carrinho no localStorage
+    function updateCart(id, qty) {
+      cart = cart.filter(item => item.pizza !== id);
+      if (qty > 0) cart.push({ pizza: id, quantity: qty });
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    // Renderiza as pizzas de um dado tamanho
+    function renderPizzas(size) {
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';  // limpa sempre que escolher um tamanho
+      const pizzasForSize = allPizzas.filter(p => p.tamanho === size);
+
+      pizzasForSize.forEach(p => {
+        const labelT = size === 'P'? 'Pequena' : size === 'M'? 'Média' : 'Grande';
+        const sabores = p.sabores.map(s => s.nome).join(', ');
+        const currentQty = (cart.find(i => i.pizza === p.id) || {quantity:0}).quantity;
+
         const div = document.createElement('div');
         div.className = 'pizza';
         div.innerHTML = `
-          <h2>Pizza ${labelTamanho}</h2>
-          <p><strong>Sabores:</strong> ${listaSabores}</p>
-          <label>
-            Qtd:
-            <input
-              type="number"
-              min="0"
-              value="${(cart.find(i => i.pizza === p.id) || {quantity: 0}).quantity}"
-              data-id="${p.id}"
-            >
-          </label>
+          <h2>Pizza ${labelT}</h2>
+          <p><strong>Sabores:</strong> ${sabores}</p>
+          <div class="quantity-selector" data-id="${p.id}">
+            <button class="qty-btn decrease">–</button>
+            <span class="qty">${currentQty}</span>
+            <button class="qty-btn increase">+</button>
+          </div>
         `;
         lista.appendChild(div);
-      });
 
-      // Atualiza carrinho ao mudar quantidade
-      lista.querySelectorAll('input[type=number]').forEach(input => {
-        input.addEventListener('change', e => {
-          const id = +e.target.dataset.id;
-          const qty = +e.target.value;
-          cart = cart.filter(item => item.pizza !== id);
-          if (qty > 0) cart.push({ pizza: id, quantity: qty });
-          localStorage.setItem('cart', JSON.stringify(cart));
+        const sel = div.querySelector('.quantity-selector');
+        const span = sel.querySelector('.qty');
+        sel.querySelector('.increase').addEventListener('click', () => {
+          let q = +span.textContent;
+          span.textContent = ++q;
+          updateCart(p.id, q);
+        });
+        sel.querySelector('.decrease').addEventListener('click', () => {
+          let q = +span.textContent;
+          if (q > 0) {
+            span.textContent = --q;
+            updateCart(p.id, q);
+          }
         });
       });
     }
 
-    // Navega para o checkout
-    document.getElementById('ir-checkout').addEventListener('click', () => {
-      window.location.href = '/checkout/';
-    });
+    // Mostra a lista de pizzas para um tamanho
+    function showPizzas(size) {
+      document.getElementById('size-selection').classList.add('hidden');
+      document.getElementById('pizzas-section').classList.remove('hidden');
+      renderPizzas(size);
+    }
 
-    // Inicialização
-    loadPizzas();
+    // Volta para seleção de tamanho
+    function showSizes() {
+      document.getElementById('size-selection').classList.remove('hidden');
+      document.getElementById('pizzas-section').classList.add('hidden');
+    }
+
+    // Liga os eventos
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      btn.addEventListener('click', () => showPizzas(btn.dataset.size));
+    });
+    document.getElementById('back-size')
+            .addEventListener('click', showSizes);
+    document.getElementById('ir-checkout')
+            .addEventListener('click', () => window.location.href = '/checkout/');
+
+    // Inicializa
+    loadAllPizzas();
   </script>
 </body>
 </html>

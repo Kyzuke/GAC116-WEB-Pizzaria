@@ -5,15 +5,19 @@
   --text-color: #333;
   --bg-color: #f8f8f8;
   --border-radius: 4px;
+  --header-height: 80px; /* altura do header fixo */
 }
 
+/* Box sizing */
 * {
   box-sizing: border-box;
 }
 
+/* Corpo da página */
 body {
   margin: 0;
-  padding: 1rem;
+  /* espaço no topo para não esconder conteúdo atrás do header */
+  padding: calc(var(--header-height) + 1rem) 1rem 1rem;
   background: var(--bg-color);
   color: var(--text-color);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -27,7 +31,7 @@ body {
   padding: 1rem;
 }
 
-/* Cabeçalhos */
+/* Títulos */
 h1 {
   color: var(--primary-color);
   font-size: 2rem;
@@ -35,42 +39,35 @@ h1 {
   text-align: center;
 }
 
-/* Formulários */
+/* Formulários (outros módulos) */
 form {
   background: var(--secondary-color);
   padding: 1.5rem;
   border-radius: var(--border-radius);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 form label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
 }
-
 form input,
 form select {
   width: 100%;
   padding: 0.5rem;
-  margin-top: 0.25rem;
-  margin-bottom: 1rem;
+  margin: 0.25rem 0 1rem;
   border: 1px solid #ccc;
   border-radius: var(--border-radius);
 }
-
 form button {
-  display: inline-block;
   background: var(--primary-color);
   color: var(--secondary-color);
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: var(--border-radius);
-  font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s;
 }
-
 form button:hover {
   background: #e67e22;
 }
@@ -80,38 +77,214 @@ a {
   color: var(--primary-color);
   text-decoration: none;
 }
-
 a:hover {
   text-decoration: underline;
 }
 
-/* Cards de pizza */
+/* Cartões de pizza */
 .pizza {
   background: var(--secondary-color);
   border: 1px solid #ddd;
   border-radius: var(--border-radius);
   padding: 1rem;
   margin-bottom: 1rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
-
 .pizza h2 {
   margin-top: 0;
   color: var(--primary-color);
 }
-
 .pizza p {
   margin: 0.5rem 0;
 }
 
-/* Botão “Ver Carrinho” */
+/* Seletor de quantidade */
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  border-radius: var(--border-radius);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+.qty-btn:hover {
+  opacity: 0.8;
+}
+.qty {
+  min-width: 24px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Botão “Ver Carrinho” padrão */
 #ir-checkout {
-  display: block;
   width: 100%;
-  margin-top: 1rem;
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  border: none;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background 0.2s;
+}
+#ir-checkout:hover {
+  background: #e67e22;
+}
+
+/* Botão “Ver Carrinho” menor na tela de seleção de tamanhos */
+#size-selection:not(.hidden) ~ #ir-checkout {
+  display: block;
+  width: auto;
+  margin: 1rem auto 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
 }
 
 /* Ocultar elementos */
 .hidden {
   display: none !important;
+}
+
+/* ========== HEADER FIXO ========== */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+.logo-placeholder {
+  display: flex;
+  align-items: center;
+}
+.logo-placeholder img {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.logo-text {
+  color: var(--secondary-color);
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-left: 1.5rem;
+}
+.admin-button {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.admin-button:hover {
+  opacity: 0.8;
+}
+
+/* ========== Seleção de tamanho ========== */
+#size-selection {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+#size-selection p {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+.size-btn {
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 0 0.5rem;
+  transition: background 0.2s, opacity 0.2s;
+}
+.size-btn:hover {
+  background: #e67e22;
+}
+.back-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.back-btn:hover {
+  opacity: 0.8;
+}
+
+/* Itens do carrinho no checkout */
+/* Itens do carrinho no checkout */
+.cart-items {
+  margin-bottom: 1rem;
+}
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--secondary-color);
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.cart-item .item-info p {
+  margin: 0;
+}
+.remove-btn {
+  background: transparent;
+  border: 1px solid #c0392b;
+  color: #c0392b;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.remove-btn:hover {
+  background: #c0392b;
+  color: #fff;
+}
+
+/* Botão “Continuar Pedindo” */
+.back-menu-btn {
+  display: inline-block;
+  background: transparent;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.back-menu-btn:hover {
+  opacity: 0.8;
 }

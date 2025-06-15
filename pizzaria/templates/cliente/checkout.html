@@ -2,13 +2,24 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <title>Checkout – Pizzaria</title>
+  <title>Checkout – Pizzaria do Tião</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="checkout-page">
   <div class="container">
     <h1>Finalizar Pedido</h1>
 
+    <!-- 1) Itens do carrinho -->
+    <div id="cart-items" class="cart-items">
+      <p>Carregando itens do carrinho…</p>
+    </div>
+
+    <!-- 2) Botão para voltar ao cardápio -->
+    <button id="btn-back-menu" class="back-menu-btn">
+      ← Continuar Pedindo
+    </button>
+
+    <!-- 3) Formulário de endereço -->
     <form id="checkout-form">
       <div>
         <label for="select-address">Endereço cadastrado:</label>
@@ -29,25 +40,78 @@
   </div>
 
   <script>
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    // carrega carrinho e remove localStorage se vazio
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     if (!cart.length) {
-      alert('Carrinho vazio');
+      alert('Carrinho vazio, escolha algumas pizzas primeiro!');
       window.location = '/pizzas/';
     }
 
-    function getCookie(name) {
-      const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-      return match ? match.pop() : '';
+    // atualiza localStorage e re-renderiza
+    function saveCart() {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCartItems();
     }
 
-    async function loadAddresses() {
-      const res = await fetch('/api/addresses/', {
-        credentials: 'same-origin'
-      });
+    // 1) Renderiza itens do carrinho
+    async function renderCartItems() {
+      const container = document.getElementById('cart-items');
+      container.innerHTML = '';
+      // busca catálogo para detalhes
+      const res = await fetch('/api/pizzas/', { credentials: 'same-origin' });
       if (!res.ok) {
-        alert('Erro ao carregar endereços');
+        container.innerHTML = '<p>Erro ao carregar itens.</p>';
         return;
       }
+      const pizzas = await res.json();
+      if (cart.length === 0) {
+        container.innerHTML = '<p>Seu carrinho está vazio.</p>';
+        return;
+      }
+
+      cart.forEach(item => {
+        const p = pizzas.find(x => x.id === item.pizza);
+        if (!p) return;
+        const labelT = p.tamanho === 'P' ? 'Pequena'
+                     : p.tamanho === 'M' ? 'Média' : 'Grande';
+        const sabores = p.sabores.map(s => s.nome).join(', ');
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <div class="item-info">
+            <p><strong>Pizza ${labelT}:</strong> ${sabores} <em>x${item.quantity}</em></p>
+          </div>
+          <button class="remove-btn" data-id="${item.pizza}">
+            Remover
+          </button>
+        `;
+        container.appendChild(div);
+      });
+
+      // adiciona listener de remoção
+      container.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = +btn.dataset.id;
+          cart = cart.filter(i => i.pizza !== id);
+          saveCart();
+        });
+      });
+    }
+
+    // 2) Botão voltar ao cardápio
+    document.getElementById('btn-back-menu')
+      .addEventListener('click', () => window.location = '/pizzas/');
+
+    // auxiliares de formulário
+    function getCookie(name) {
+      const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return m ? m.pop() : '';
+    }
+
+    // carrega endereços no <select>
+    async function loadAddresses() {
+      const res = await fetch('/api/addresses/', { credentials: 'same-origin' });
+      if (!res.ok) { alert('Erro ao carregar endereços'); return; }
       const addrs = await res.json();
       const sel = document.getElementById('select-address');
       sel.innerHTML = '<option value="">— Selecione… —</option>';
@@ -60,50 +124,54 @@
       sel.appendChild(new Option('Outro endereço', 'new'));
     }
 
-    document.getElementById('select-address').addEventListener('change', e => {
-      const newFields = document.getElementById('new-address-fields');
-      if (e.target.value === 'new' || e.target.value === '') {
-        newFields.classList.remove('hidden');
-      } else {
-        newFields.classList.add('hidden');
-      }
-    });
-
-    document.getElementById('checkout-form').addEventListener('submit', async e => {
-      e.preventDefault();
-      const choice = e.target.address_choice.value;
-      const payload = { items: cart };
-      if (choice && choice !== 'new') {
-        payload.address_id = +choice;
-      } else {
-        const fd = new FormData(e.target);
-        payload.address = {
-          street:   fd.get('street'),
-          city:     fd.get('city'),
-          zip_code: fd.get('zip_code')
-        };
-      }
-
-      const res = await fetch('/api/orders/', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify(payload)
+    // exibe/esconde campos de novo endereço
+    document.getElementById('select-address')
+      .addEventListener('change', e => {
+        document.getElementById('new-address-fields')
+          .classList.toggle('hidden', e.target.value !== 'new' && e.target.value !== '');
       });
-      if (res.ok) {
-        localStorage.removeItem('cart');
-        alert('Pedido realizado com sucesso!');
-        window.location = '/pizzas/';
-      } else {
-        const err = await res.json();
-        alert('Erro: ' + JSON.stringify(err));
-      }
-    });
 
-    loadAddresses();
+    // 3) Submissão do pedido
+    document.getElementById('checkout-form')
+      .addEventListener('submit', async e => {
+        e.preventDefault();
+        const choice = e.target.address_choice.value;
+        const payload = { items: cart };
+        if (choice && choice !== 'new') {
+          payload.address_id = +choice;
+        } else {
+          const fd = new FormData(e.target);
+          payload.address = {
+            street:   fd.get('street'),
+            city:     fd.get('city'),
+            zip_code: fd.get('zip_code')
+          };
+        }
+
+        const res = await fetch('/api/orders/', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          localStorage.removeItem('cart');
+          alert('Pedido realizado com sucesso! 🍕');
+          window.location = '/pizzas/';
+        } else {
+          const err = await res.json();
+          alert('Erro: ' + JSON.stringify(err));
+        }
+      });
+
+    // inicializa
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCartItems();
+      loadAddresses();
+    });
   </script>
 </body>
 </html>
