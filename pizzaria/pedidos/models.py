@@ -6,16 +6,30 @@ class Address(models.Model):
     street   = models.CharField(max_length=255)
     city     = models.CharField(max_length=100)
     zip_code = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return f"{self.street}, {self.city}, {self.zip_code}"
+    
+    class Meta:
+        verbose_name_plural = "Endereços"
+        unique_together = ('user', 'street', 'city', 'zip_code')
 
 class Order(models.Model):
-    user       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    address    = models.ForeignKey(Address, on_delete=models.PROTECT)
-    created_at = models.DateTimeField(auto_now_add=True)
+    user       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Usuário')
+    address    = models.ForeignKey(Address, on_delete=models.PROTECT, verbose_name='Endereço')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='data')
 
 class OrderItem(models.Model):
     order    = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     pizza    = models.ForeignKey('pedidos.Pizza', on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(default=1)
+    
+    def __str__(self):
+        return f"{self.quantity}× {self.pizza}"
+    
+    class Meta:
+        verbose_name = 'Item do pedido'
+        verbose_name_plural = 'Itens do pedido'
 
 class Cliente(models.Model):
     user     = models.OneToOneField(
@@ -23,7 +37,8 @@ class Cliente(models.Model):
                  on_delete=models.CASCADE,
                  related_name='cliente',
                  null=True,
-                 blank=True
+                 blank=True,
+                 verbose_name='Usuário'
                )
     nome     = models.CharField(max_length=100)
     telefone = models.CharField(max_length=15)

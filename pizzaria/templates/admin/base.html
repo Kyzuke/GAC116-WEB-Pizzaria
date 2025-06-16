@@ -1,0 +1,54 @@
+{# templates/admin/base.html #}
+{% load static i18n admin_urls %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Pizzaria Admin{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  {% block extrahead %}{% endblock %}
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+
+  {# ← Header sempre visível, mesmo no login #}
+  <header class="site-header">
+    <div class="logo-placeholder">
+      <img src="{% static 'img/logo.png' %}" alt="Logo da Pizzaria do Tião">
+      <span class="logo-text">Pizzaria do Tião</span>
+    </div>
+    {% if user.is_authenticated and user.is_staff %}
+      <a href="/" class="admin-button">{% trans "Ver Site" %}</a>
+    {% else %}
+      {# Se quiser, um simples link de “Admin” mesmo para login #}
+      <a href="{% url 'admin:login' %}" class="admin-button">{% trans "Admin" %}</a>
+    {% endif %}
+  </header>
+
+  {# ← Somente se staff autenticado mostramos sidebar + main.wrapper #}
+  {% if user.is_authenticated and user.is_staff %}
+    <div class="admin-wrapper">
+      <aside class="sidebar">
+        <nav>
+          <ul>
+            <li><a href="{% url 'admin:index' %}">{% trans "Dashboard" %}</a></li>
+            <li><a href="{% url 'admin:pedidos_cliente_changelist' %}">{% trans "Clientes" %}</a></li>
+            <li><a href="{% url 'admin:pedidos_order_changelist' %}">{% trans "Pedidos" %}</a></li>
+            <li><a href="{% url 'admin:pedidos_pizza_changelist' %}">{% trans "Pizzas" %}</a></li>
+            <li><a href="{% url 'admin:pedidos_sabor_changelist' %}">{% trans "Sabores" %}</a></li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="content">
+  {% endif %}
+
+      {# Aqui entra o conteúdo normal (login ou dashboard) #}
+      {% block content %}{% endblock %}
+
+  {% if user.is_authenticated and user.is_staff %}
+      </main>
+    </div>
+  {% endif %}
+
+  {% block extrajs %}{% endblock %}
+</body>
+</html>

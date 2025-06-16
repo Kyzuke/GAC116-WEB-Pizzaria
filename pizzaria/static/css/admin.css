@@ -1,0 +1,244 @@
+/* static/css/admin.css */
+
+/* 1. Variáveis do tema (copiado de style.css) */
+:root {
+  --primary-color:   #d35400;                   /* laranja pizzaria */
+  --secondary-color: #ffffff;                   /* branco */
+  --text-color:      #333333;                   /* texto escuro */
+  --bg-color:        #f8f8f8;                   /* fundo claro */
+  --accent-color:    var(--bg-color);           /* para bordas e cabeçalhos */
+  --border-radius:   4px;                       /* cantos arredondados */
+  --header-height:   80px;                      /* altura do header */
+  --font-family:     "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 2. Reset e corpo */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  padding-top: var(--header-height); /* espaço pro header fixo */
+  font-family: var(--font-family);
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* 3. HEADER (igual ao site de cliente) */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-height);
+  background: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+.logo-placeholder {
+  display: flex;
+  align-items: center;
+}
+.logo-placeholder img {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.logo-text {
+  color: var(--secondary-color);
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-left: 1rem;
+}
+.admin-button {
+  display: inline-block;
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: opacity 0.2s;
+}
+.admin-button:hover {
+  opacity: 0.8;
+}
+
+/* 4. Layout geral: sidebar + conteúdo */
+.admin-wrapper {
+  display: flex;
+  min-height: calc(100vh - var(--header-height));
+}
+.sidebar {
+  width: 220px;
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  padding-top: 2rem; /* abaixo do header */
+}
+.sidebar nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar nav ul li a {
+  display: block;
+  padding: 0.75rem 1.25rem;
+  color: var(--secondary-color);
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  transition: background 0.2s;
+}
+.sidebar nav ul li a:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* 5. Área de conteúdo */
+.content {
+  flex: 1;
+  background: var(--secondary-color);
+  padding: 2rem;
+  overflow-x: auto;
+}
+
+/* 6. Tabelas e listagens */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+th, td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--accent-color);
+}
+th {
+  background: var(--accent-color);
+  text-align: left;
+  font-weight: normal;
+}
+
+/* 7. Formulários */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0 1rem;
+  border: 1px solid var(--accent-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+}
+label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+/* 8. Botões */
+button,
+input[type="submit"],
+.submit-row input {
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 0.95rem;
+  margin-right: 0.5rem;
+  transition: opacity 0.2s;
+}
+button:hover,
+input[type="submit"]:hover,
+.submit-row input:hover {
+  opacity: 0.9;
+}
+
+/* 9. Mensagens de sistema */
+.messagelist .success,
+.success {
+  background: #eafaf1;
+  border-left: 4px solid #27ae60;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.messagelist .error,
+.error {
+  background: #f9e6e6;
+  border-left: 4px solid #c0392b;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* 10. Forçar legibilidade do conteúdo do Admin */
+.content,
+.content h1, .content h2, .content h3,
+.content table, .content th, .content td,
+.content a, .content p, .content label,
+.content .module h2 {
+  color: var(--text-color) !important;
+}
+
+/* === LOGIN PAGE CENTRALIZADO === */
+.login-page-wrapper {
+  display: flex;
+  align-items: flex-start;           /* fica no topo, não no centro */
+  justify-content: center;
+  height: calc(100vh - var(--header-height));
+  /* empurra a caixa para baixo do header + 2rem extras */
+  padding-top: calc(var(--header-height) + 2rem);
+}
+
+.login-page-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--secondary-color);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.login-page-card h1 {
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-page-card .form-group {
+  margin-bottom: 1rem;
+}
+
+.login-page-card label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.login-page-card input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--accent-color);
+  border-radius: var(--border-radius);
+  background: #f0f8ff;
+}
+
+.login-page-card button {
+  width: 100%;
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  border: none;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.login-page-card button:hover {
+  opacity: 0.8;
+}
+/* === FIM LOGIN PAGE CENTRALIZADO === */

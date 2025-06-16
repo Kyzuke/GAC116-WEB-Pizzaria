@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
+from django.utils import timezone
 
 from .models import (
     Cliente,
@@ -56,8 +57,7 @@ class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
     readonly_fields = ('pizza', 'quantity')
-
-
+    
 # ——— Admin de Order (agora “Pedidos”) ———
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
@@ -68,9 +68,9 @@ class OrderAdmin(admin.ModelAdmin):
         'get_rua',
         'get_cidade',
         'get_cep',
-        'created_at'
+        'criacao_formatada'
     )
-    list_filter = ('created_at',)
+    list_filter = ('created_at'),
     inlines    = [OrderItemInline]
 
     def get_rua(self, obj):
@@ -89,3 +89,8 @@ class OrderAdmin(admin.ModelAdmin):
         return obj.user.cliente.nome
     get_cliente.short_description = 'Cliente'
     get_cliente.admin_order_field = 'user__cliente__nome'
+    
+    def criacao_formatada(self, obj):
+        data_local = timezone.localtime(obj.created_at)
+        return data_local.strftime('%d/%m/%Y %H:%M')
+    criacao_formatada.short_description = 'Criado em'
