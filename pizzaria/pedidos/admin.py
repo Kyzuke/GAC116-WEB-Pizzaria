@@ -55,8 +55,10 @@ Order._meta.verbose_name_plural = 'Pedidos'
 # ——— Inline de itens de cada pedido ———
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
-    extra = 0
-    readonly_fields = ('pizza', 'quantity')
+    extra = 1                      # sempre um form em branco já visível
+    fields = ('pizza', 'quantity')
+    # nada de readonly_fields, autocomplete_fields nem raw_id_fields
+    can_delete = True              # permite excluir itens se quiser
     
 # ——— Admin de Order (agora “Pedidos”) ———
 @admin.register(Order)
