@@ -3,39 +3,67 @@
 <head>
   <meta charset="utf-8">
   <title>Cardápio – Pizzaria do Tião</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="pizzas-page">
 
-  <header class="site-header">
-    <div class="logo-placeholder">
-      <img src="/static/img/logo.png" alt="Logo da Pizzaria do Tião">
-      <span class="logo-text">Pizzaria do Tião</span>
-    </div>
-    <button class="admin-button" onclick="location.href='/admin'">Admin</button>
-  </header>
+<!-- HEADER (mantém seu CSS) -->
+<header class="site-header">
+  <a href="/" class="logo-placeholder">
+    <img src="/static/img/logo.png" alt="Logo da Pizzaria do Tião">
+    <span class="logo-text">Pizzaria do Tião</span>
+  </a>
+  <button
+    onclick="window.location.href='/admin'"
+    id="btn-admin"
+    class="btn btn-light">
+    Admin
+  </button>
+</header>
 
-  <div class="container">
-    <h1>Escolha sua pizza</h1>
+  <div class="container mt-5 pt-5">
+    <h1 class="text-center mb-4">Escolha sua pizza</h1>
 
     <!-- 1) Seleção de tamanho -->
-    <div id="size-selection">
+    <div id="size-selection" class="text-center mb-4">
       <p>Qual tamanho de pizza deseja escolher?</p>
-      <button class="size-btn" data-size="P">Pequena</button>
-      <button class="size-btn" data-size="M">Média</button>
-      <button class="size-btn" data-size="G">Grande</button>
+      <button
+        class="size-btn btn btn-outline-primary mx-1"
+        data-size="P">Pequena</button>
+      <button
+        class="size-btn btn btn-outline-primary mx-1"
+        data-size="M">Média</button>
+      <button
+        class="size-btn btn btn-outline-primary mx-1"
+        data-size="G">Grande</button>
     </div>
 
     <!-- 2) Seção de pizzas (inicialmente oculta) -->
-    <div id="pizzas-section" class="hidden">
-      <button id="back-size" class="back-btn">← Escolher outro tamanho</button>
+    <div id="pizzas-section" class="hidden mb-4">
+      <button
+        id="back-size"
+        class="btn-link mb-3">
+        ← Escolher outro tamanho
+      </button>
       <div id="lista"></div>
     </div>
 
-    <!-- 3) Botão Ver Carrinho sempre visível -->
-    <button id="ir-checkout">Ver Carrinho</button>
+    <!-- 3) Botão Ver Carrinho -->
+    <button
+      id="ir-checkout"
+      class="btn btn-primary w-auto">
+      Ver Carrinho
+    </button>
   </div>
 
+  <!-- Bootstrap JS Bundle -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+  </script>
   <script>
     let allPizzas = [];
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');

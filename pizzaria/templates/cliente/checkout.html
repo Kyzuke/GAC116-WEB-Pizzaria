@@ -3,43 +3,97 @@
 <head>
   <meta charset="utf-8">
   <title>Checkout – Pizzaria do Tião</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="checkout-page">
-  <div class="container">
-    <h1>Finalizar Pedido</h1>
+  <div class="container mt-5 pt-5">
+    <h1 class="text-center mb-4">Finalizar Pedido</h1>
+
+<!-- HEADER (mantém seu CSS) -->
+<header class="site-header">
+  <a href="/" class="logo-placeholder">
+    <img src="/static/img/logo.png" alt="Logo da Pizzaria do Tião">
+    <span class="logo-text">Pizzaria do Tião</span>
+  </a>
+  <button
+    onclick="window.location.href='/admin'"
+    id="btn-admin"
+    class="btn btn-light">
+    Admin
+  </button>
+</header>
 
     <!-- 1) Itens do carrinho -->
-    <div id="cart-items" class="cart-items">
+    <div id="cart-items" class="cart-items mb-4">
       <p>Carregando itens do carrinho…</p>
     </div>
 
     <!-- 2) Botão para voltar ao cardápio -->
-    <button id="btn-back-menu" class="back-menu-btn">
+    <button
+      id="btn-back-menu"
+      class="btn-link mb-4">
       ← Continuar Pedindo
     </button>
 
     <!-- 3) Formulário de endereço -->
-    <form id="checkout-form">
-      <div>
-        <label for="select-address">Endereço cadastrado:</label>
-        <select id="select-address" name="address_choice">
+    <form id="checkout-form" class="bg-light p-4 rounded shadow">
+      <div class="mb-3">
+        <label for="select-address" class="form-label">
+          Endereço cadastrado:
+        </label>
+        <select
+          id="select-address"
+          name="address_choice"
+          class="form-select">
           <option value="">— Carregando… —</option>
           <option value="new">Outro endereço</option>
         </select>
       </div>
 
       <div id="new-address-fields" class="hidden">
-        <label>Rua:    <input name="street"></label>
-        <label>Cidade: <input name="city"></label>
-        <label>CEP:    <input name="zip_code"></label>
+        <div class="mb-3">
+          <label for="street" class="form-label">Rua</label>
+          <input
+            type="text"
+            class="form-control"
+            id="street"
+            name="street">
+        </div>
+        <div class="mb-3">
+          <label for="city" class="form-label">Cidade</label>
+          <input
+            type="text"
+            class="form-control"
+            id="city"
+            name="city">
+        </div>
+        <div class="mb-3">
+          <label for="zip_code" class="form-label">CEP</label>
+          <input
+            type="text"
+            class="form-control"
+            id="zip_code"
+            name="zip_code">
+        </div>
       </div>
 
-      <button type="submit">Enviar Pedido</button>
+      <button
+        type="submit"
+        class="btn btn-primary w-100">
+        Enviar Pedido
+      </button>
     </form>
   </div>
 
-  <script>
+  <!-- Bootstrap JS Bundle -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+  </script>
+    <script>
     // carrega carrinho e remove localStorage se vazio
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     if (!cart.length) {

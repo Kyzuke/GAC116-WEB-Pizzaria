@@ -1,11 +1,21 @@
 /* Fonte e cores base */
 :root {
-  --primary-color: #d35400;
-  --secondary-color: #ffffff;
-  --text-color: #333;
-  --bg-color: #f8f8f8;
-  --border-radius: 4px;
-  --header-height: 80px; /* altura do header fixo */
+  --primary-color:          #d35400;
+  --secondary-color:        #ffffff;
+  --text-color:             #333;
+  --bg-color:               #f8f8f8;
+  --border-radius:          4px;
+  --header-height:          80px;   /* altura do header fixo */
+  --primary-color-d:        #b34700;
+  --link-color:             #d35400;
+  --link-hover:             #b34700;
+
+  /* ===== Bootstrap variable overrides ===== */
+  --bs-primary:             #d35400;
+  --bs-btn-hover-bg:        #b34700;
+  --bs-btn-hover-border-color: #b34700;
+  --bs-link-color:          #d35400;
+  --bs-link-hover-color:    #b34700;
 }
 
 /* Box sizing */
@@ -69,15 +79,16 @@ form button {
   transition: background 0.2s;
 }
 form button:hover {
-  background: #e67e22;
+  background: var(--primary-color-d);
 }
 
 /* Links */
 a {
-  color: var(--primary-color);
+  color: var(--link-color);
   text-decoration: none;
 }
 a:hover {
+  color: var(--link-hover);
   text-decoration: underline;
 }
 
@@ -142,7 +153,7 @@ a:hover {
   transition: background 0.2s;
 }
 #ir-checkout:hover {
-  background: #e67e22;
+  background: var(--primary-color-d);
 }
 
 /* Botão “Ver Carrinho” menor na tela de seleção de tamanhos */
@@ -225,7 +236,7 @@ a:hover {
   transition: background 0.2s, opacity 0.2s;
 }
 .size-btn:hover {
-  background: #e67e22;
+  background: var(--primary-color-d);
 }
 .back-btn {
   background: transparent;
@@ -240,7 +251,6 @@ a:hover {
   opacity: 0.8;
 }
 
-/* Itens do carrinho no checkout */
 /* Itens do carrinho no checkout */
 .cart-items {
   margin-bottom: 1rem;
@@ -288,3 +298,43 @@ a:hover {
 .back-menu-btn:hover {
   opacity: 0.8;
 }
+
+/* ——————— OVERRIDES BOOTSTRAP AZUL → LARANJA ——————— */
+
+/* BTN “.btn-primary” */
+
+.btn-primary {
+  --bs-btn-bg: var(--bs-primary) !important;
+  border-color:     var(--primary-color) !important;
+  color: #fff;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--primary-color-d) !important;
+  border-color:     var(--primary-color-d) !important;
+}
+
+/* BTN Outline “.btn-outline-primary” */
+.btn-outline-primary {
+  background-color: var(--primary-color) !important;
+  color:            var(--secondary-color) !important;
+  border-color:     var(--primary-color) !important;
+}
+.btn-outline-primary:hover {
+  background-color: var(--primary-color-d) !important;
+  color:            var(--secondary-color) !important;
+}
+
+/* LINKS GERAIS E .btn-link */
+
+.btn-link {
+  color: var(--link-color);
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(211, 84, 0, 0.25) !important;
+}
+/* ————————————— FIM OVERRIDES —————————————— */
